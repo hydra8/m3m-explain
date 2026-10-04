@@ -6,7 +6,7 @@ An agent skill that explains anything — code your agent wrote, a concept, a pa
 
 https://github.com/user-attachments/assets/e43edced-7121-4fc0-a83c-e1d91495a77f
 
-*13-second demo, sound on. Vertical Russian version: [README.ru.md](README.ru.md).*
+*13-second demo, sound on.*
 
 ## Why
 
@@ -118,7 +118,7 @@ python3 -m unittest discover -s tests
 
 51 tests: the installer in a sandbox `HOME` (fresh install, existing folders, reinstall, a path with spaces, dry run, uninstall, `curl | bash` mode), the skill finder, the page checker, the sound-offset script, the text scorer and a check that no personal data is in the repo.
 
-The demo videos were made with HyperFrames, the same engine the video level uses.
+The demo video was made with HyperFrames, the same engine the video level uses.
 
 ## Credits
 
@@ -137,4 +137,4 @@ Details: [skills/m3m-explain/CREDITS.md](skills/m3m-explain/CREDITS.md).
 
 ## Changelog
 
-- 2026-10-05 — first public release: the four-level ladder, installer with `--with-video`, English and Russian text rules, demo videos.
+- 2026-10-05 — first public release: the four-level ladder, installer with `--with-video`, English and Russian text rules, demo video.
