@@ -1,16 +1,12 @@
-
-
-https://github.com/user-attachments/assets/e43edced-7121-4fc0-a83c-e1d91495a77f
-
 **English** | [Русский](README.ru.md)
 
 # m3m-explain
 
 An agent skill that explains anything — code your agent wrote, a concept, a paper, an idea — and picks the best form for it: **text → diagram → animated page → video**. The harder the topic, the more visual the answer.
 
-[![m3m-explain demo (13 s)](media/poster-promo.jpg)](https://github.com/hydra8/m3m-explain/raw/main/media/m3m-explain-promo.mp4)
+https://github.com/user-attachments/assets/e43edced-7121-4fc0-a83c-e1d91495a77f
 
-*Click the image to watch the 13-second demo. Vertical Russian version: [m3m-explain-promo-ru.mp4](https://github.com/hydra8/m3m-explain/raw/main/media/m3m-explain-promo-ru.mp4).*
+*13-second demo, sound on. Vertical Russian version: [README.ru.md](README.ru.md).*
 
 ## Why
 
@@ -24,6 +20,8 @@ m3m-explain turns that into a ladder your agent follows on every "explain" reque
 | 2. Diagram | one link that is easier to see: order, cause, dependency | a self-contained HTML diagram |
 | 3. Animated page | steps, paths, states, a whole system | an HTML page with a step player and animations |
 | 4. Video | the core is motion or transformation | a silent video with sound effects (HyperFrames) |
+
+<p align="center"><img src="media/poster-promo.jpg" width="560" alt="The four levels: text, diagram, page, video"></p>
 
 The skill announces the level it chose. An explicit format wins ("in 5 sentences", "draw it", "make a video"). "I don't get it" moves exactly one step up. Video is always offered first and never built without a yes, unless you asked for a video.
 
