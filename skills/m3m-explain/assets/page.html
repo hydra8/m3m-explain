@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FILL: тема объяснения</title>
+<style>
+  :root {
+    --bg: #fbfaf7; --surface: #ffffff; --text: #1d1d1f; --muted: #5f6368;
+    --line: #c9c4bb; --accent: #2f6fde; --accent-soft: #e3ecfb;
+    --ok: #1f8a4c; --warn: #b3261e; --mark: #fff3c4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141416; --surface: #1d1d20; --text: #ececf0; --muted: #a2a6ad;
+      --line: #4a4a52; --accent: #7aa7ff; --accent-soft: #23314d;
+      --ok: #5fd08e; --warn: #ff8a80; --mark: #4a3f12;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", "PT Sans", Roboto, sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; overflow-wrap: anywhere; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.8rem; line-height: 1.2; margin: 0 0 16px; }
+  h2 { font-size: 1.2rem; margin: 32px 0 8px; }
+  .answer {
+    background: var(--accent-soft); border-left: 4px solid var(--accent);
+    padding: 14px 18px; border-radius: 6px; margin: 0 0 24px;
+  }
+  figure { margin: 24px 0; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  figcaption { color: var(--muted); font-size: 0.95rem; margin-top: 8px; }
+  svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  svg text { fill: var(--text); font: 15px -apple-system, "Segoe UI", "PT Sans", Roboto, sans-serif; }
+  .node rect, .node circle { fill: var(--surface); stroke: var(--line); stroke-width: 2; }
+  .node--accent rect, .node--accent circle { fill: var(--accent-soft); stroke: var(--accent); }
+  .edge { stroke: var(--muted); stroke-width: 2; fill: none; marker-end: url(#arrow); }
+  .edge-label { fill: var(--muted) !important; font-size: 13px !important; }
+  .muted { opacity: 0.35; }
+  #arrow path { fill: var(--muted); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  button {
+    font: inherit; font-size: 0.95rem; color: var(--text); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 6px; padding: 4px 12px; cursor: pointer;
+  }
+  button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .step-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .step-note { min-height: 3.2em; margin-top: 8px; }
+  .stepper .step { transition: opacity 0.45s ease, transform 0.45s ease; }
+  .stepper .step[hidden] { display: inline; opacity: 0; transform: translateY(8px); pointer-events: none; }
+  .stepper.no-anim .step { transition: none; }
+  .path-normal .only-failure, .path-failure .only-normal { opacity: 0.12; }
+  .only-normal, .only-failure { transition: opacity 0.3s ease; }
+  input[type="range"] { width: min(320px, 100%); }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; }
+  .claims ul { padding-left: 0; list-style: none; }
+  .claims li { margin: 6px 0; }
+  .claims li::before { display: inline-block; font-size: 0.8rem; border-radius: 4px; padding: 0 6px; margin-right: 8px; }
+  [data-claim="observed"]::before { content: "видно в источнике"; background: var(--accent-soft); }
+  [data-claim="inferred"]::before { content: "вывод"; background: var(--mark); }
+  [data-claim="unknown"]::before { content: "неизвестно"; border: 1px solid var(--line); }
+  .step-note pre, .wire {
+    font: 14px/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--bg); border: 1px solid var(--line); border-radius: 6px;
+    padding: 8px 10px; margin: 6px 0 0; overflow-x: auto; white-space: pre;
+  }
+  @media (max-width: 600px) {
+    figure { overflow-x: auto; }
+    figure svg { min-width: 560px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>FILL: тема объяснения</h1>
+
+  <!-- Ответ: 2–4 предложения, вывод виден без прокрутки. -->
+  <section class="answer">
+    <p>FILL: ответ в 2–4 предложениях.</p>
+  </section>
+
+  <!-- КОМПОНЕНТ «плеер шагов». Кадры — g.step[data-step="N"] внутри SVG; общий фон — вне .step.
+       Пояснение к кадру — [data-step-note="N"]. Хэш #step=N или #step=last открывает кадр. -->
+  <figure class="stepper" id="fig-1" tabindex="0" aria-label="Пошаговая схема">
+    <svg viewBox="0 0 720 220" role="img" aria-label="Демо: три шага процесса">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z"/>
+        </marker>
+      </defs>
+      <g class="node"><rect x="20" y="80" width="160" height="60" rx="8"/><text x="100" y="115" text-anchor="middle">Вход</text></g>
+      <g class="node"><rect x="280" y="80" width="160" height="60" rx="8"/><text x="360" y="115" text-anchor="middle">Обработка</text></g>
+      <g class="node"><rect x="540" y="80" width="160" height="60" rx="8"/><text x="620" y="115" text-anchor="middle">Результат</text></g>
+      <g class="step" data-step="1">
+        <g class="node node--accent"><rect x="20" y="80" width="160" height="60" rx="8"/><text x="100" y="115" text-anchor="middle">Вход</text></g>
+      </g>
+      <g class="step" data-step="2">
+        <path class="edge" d="M180,110 L277,110"/><text class="edge-label" x="230" y="100" text-anchor="middle">передаёт</text>
+        <g class="node node--accent"><rect x="280" y="80" width="160" height="60" rx="8"/><text x="360" y="115" text-anchor="middle">Обработка</text></g>
+      </g>
+      <g class="step" data-step="3">
+        <path class="edge" d="M180,110 L277,110"/><path class="edge" d="M440,110 L537,110"/>
+        <text class="edge-label" x="490" y="100" text-anchor="middle">выдаёт</text>
+        <g class="node node--accent"><rect x="540" y="80" width="160" height="60" rx="8"/><text x="620" y="115" text-anchor="middle">Результат</text></g>
+      </g>
+    </svg>
+    <div class="controls">
+      <button type="button" data-act="prev" aria-label="Назад">←</button>
+      <button type="button" data-act="play" aria-label="Проиграть">▶</button>
+      <button type="button" data-act="next" aria-label="Вперёд">→</button>
+      <span class="step-count"></span>
+    </div>
+    <div class="step-note" data-step-note="1">Шаг 1. Демо: данные пришли на вход.</div>
+    <div class="step-note" data-step-note="2">Шаг 2. Демо: обработка получила данные.</div>
+    <div class="step-note" data-step-note="3">Шаг 3. Демо: готов результат.</div>
+    <figcaption>Рис. 1. FILL: на какой вопрос отвечает схема.</figcaption>
+  </figure>
+
+  <!-- КОМПОНЕНТ «переключатель путей». Элементы обычного пути — .only-normal, аварийного — .only-failure. -->
+  <figure class="path-normal" id="fig-2">
+    <svg viewBox="0 0 720 160" role="img" aria-label="Демо: обычный и аварийный путь">
+      <g class="node"><rect x="20" y="50" width="160" height="60" rx="8"/><text x="100" y="86" text-anchor="middle">Запрос</text></g>
+      <g class="node only-normal"><rect x="280" y="10" width="160" height="60" rx="8"/><text x="360" y="46" text-anchor="middle">Успех</text></g>
+      <g class="node only-failure"><rect x="280" y="90" width="160" height="60" rx="8"/><text x="360" y="126" text-anchor="middle">Отказ</text></g>
+      <path class="edge only-normal" d="M180,70 L277,45"/>
+      <path class="edge only-failure" d="M180,90 L277,115"/>
+    </svg>
+    <div class="controls">
+      <button type="button" data-path="normal" aria-pressed="true">Обычный путь</button>
+      <button type="button" data-path="failure" aria-pressed="false">Сбой</button>
+    </div>
+    <figcaption>Рис. 2. Демо: один и тот же запрос, два исхода.</figcaption>
+  </figure>
+
+  <!-- КОМПОНЕНТ «ползунок». Задайте window.onSlider = (value) => { ... } в своём скрипте. -->
+  <figure id="fig-3">
+    <svg viewBox="0 0 720 80" role="img" aria-label="Демо: величина зависит от параметра">
+      <rect x="20" y="25" width="680" height="30" rx="4" fill="none" stroke="currentColor" opacity="0.3"/>
+      <rect id="demo-bar" x="20" y="25" width="340" height="30" rx="4" fill="var(--accent)"/>
+    </svg>
+    <div class="controls">
+      <label>Параметр: <input type="range" min="0" max="100" value="50" data-slider></label>
+      <output data-slider-value>50</output>
+    </div>
+    <figcaption>Рис. 3. Демо: длина полосы следует за параметром.</figcaption>
+  </figure>
+
+  <!-- КОМПОНЕНТ «обзор → детали». -->
+  <details>
+    <summary>Подробнее: демо-раздел</summary>
+    <p>Детали, которые нужны не всем читателям.</p>
+  </details>
+
+  <!-- Утверждения: observed — видно в источнике, inferred — вывод, unknown — неизвестно. -->
+  <section class="claims">
+    <h2>На чём это держится</h2>
+    <ul>
+      <li data-claim="observed">Демо: факт из источника.</li>
+      <li data-claim="inferred">Демо: вывод из фактов.</li>
+      <li data-claim="unknown">Демо: что источник не решает.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function () {
+  function setupStepper(fig, startStep) {
+    var steps = Array.prototype.slice.call(fig.querySelectorAll('.step'));
+    var notes = fig.querySelectorAll('[data-step-note]');
+    var counter = fig.querySelector('.step-count');
+    var playBtn = fig.querySelector('[data-act="play"]');
+    var total = steps.length, current = 1, timer = null;
+    function show(n) {
+      current = Math.max(1, Math.min(total, n));
+      steps.forEach(function (g) { g.toggleAttribute('hidden', Number(g.dataset.step) > current); });
+      Array.prototype.forEach.call(notes, function (el) { el.hidden = Number(el.dataset.stepNote) !== current; });
+      if (counter) counter.textContent = current + ' / ' + total;
+    }
+    function stop() { clearInterval(timer); timer = null; if (playBtn) playBtn.textContent = '▶'; }
+    function play() {
+      if (timer) return stop();
+      if (current === total) show(1);
+      playBtn.textContent = '❚❚';
+      timer = setInterval(function () { if (current >= total) stop(); else show(current + 1); }, 1600);
+    }
+    fig.addEventListener('click', function (e) {
+      var act = e.target.closest('[data-act]');
+      if (!act) return;
+      if (act.dataset.act === 'play') return play();
+      stop();
+      show(current + (act.dataset.act === 'next' ? 1 : -1));
+    });
+    fig.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { stop(); show(current + 1); }
+      if (e.key === 'ArrowLeft') { stop(); show(current - 1); }
+    });
+    fig.classList.add('no-anim');
+    show(startStep === 'last' ? total : Number(startStep) || 1);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { fig.classList.remove('no-anim'); }); });
+  }
+
+  var hash = location.hash.match(/#step=(\d+|last)/);
+  Array.prototype.forEach.call(document.querySelectorAll('.stepper'), function (fig, i) {
+    setupStepper(fig, i === 0 && hash ? hash[1] : 1);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('figure'), function (fig) {
+    var buttons = fig.querySelectorAll('[data-path]');
+    Array.prototype.forEach.call(buttons, function (btn) {
+      btn.addEventListener('click', function () {
+        fig.classList.remove('path-normal', 'path-failure');
+        fig.classList.add('path-' + btn.dataset.path);
+        Array.prototype.forEach.call(buttons, function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+      });
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('input[data-slider]'), function (input) {
+    var out = input.closest('figure').querySelector('[data-slider-value]');
+    function update() {
+      if (out) out.textContent = input.value;
+      if (typeof window.onSlider === 'function') window.onSlider(Number(input.value), input);
+    }
+    input.addEventListener('input', update);
+    document.addEventListener('DOMContentLoaded', update);
+  });
+})();
+
+// Демо для рис. 3 — удалите вместе с компонентом.
+window.onSlider = function (value) {
+  document.getElementById('demo-bar').setAttribute('width', String(6.8 * value));
+};
+</script>
+</body>
+</html>
